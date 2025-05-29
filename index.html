@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bionix AI Customer Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5aa0 50%, #f4a261 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .chat-container {
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(30, 58, 95, 0.15);
+            width: 100%;
+            max-width: 450px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid #f4a261;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5aa0 100%);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #2c5aa0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #f4a261;
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .chat-header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 25px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: #f4a261;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(244, 162, 97, 0.6);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .company-info {
+            background: #f8f9fa;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .company-info span {
+            font-size: 0.75rem;
+            color: #6c757d;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #fafbfc;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            animation: fadeInUp 0.3s ease-out;
+            font-weight: 400;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3a5f 100%);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+            box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
+        }
+
+        .message.bot {
+            background: #ffffff;
+            color: #1e3a5f;
+            align-self: flex-start;
+            border: 2px solid #f4a261;
+            box-shadow: 0 2px 8px rgba(244, 162, 97, 0.1);
+        }
+
+        .message.system {
+            background: #fff3cd;
+            color: #856404;
+            align-self: center;
+            font-size: 0.85rem;
+            border: 1px solid #f4a261;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: #ffffff;
+            border-top: 2px solid #f4a261;
+        }
+
+        .chat-input-form {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            resize: none;
+            min-height: 48px;
+            max-height: 120px;
+            font-family: inherit;
+            font-weight: 400;
+        }
+
+        .chat-input:focus {
+            border-color: #2c5aa0;
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #f4a261 0%, #e76f51 100%);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(244, 162, 97, 0.3);
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(244, 162, 97, 0.4);
+        }
+
+        .send-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            padding: 14px 18px;
+            background: #ffffff;
+            border-radius: 18px;
+            max-width: 80px;
+            align-self: flex-start;
+            border: 2px solid #f4a261;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #2c5aa0;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #2c5aa0;
+            font-style: italic;
+            margin: 20px 0;
+            font-weight: 500;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 15px;
+            border: 2px solid #f4a261;
+            box-shadow: 0 2px 8px rgba(244, 162, 97, 0.1);
+        }
+
+        .tech-tagline {
+            font-size: 0.8rem;
+            color: #f4a261;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        /* Scrollbar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #f4a261;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #e76f51;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 480px) {
+            .chat-container {
+                height: 100vh;
+                border-radius: 0;
+                max-width: none;
+                border: none;
+                border-top: 3px solid #f4a261;
+            }
+            
+            body {
+                padding: 0;
+            }
+
+            .chat-header {
+                padding: 20px 15px;
+            }
+
+            .logo-container {
+                gap: 8px;
+            }
+
+            .logo-icon {
+                width: 35px;
+                height: 35px;
+            }
+        }
+
+        .robot-icon {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="status-indicator"></div>
+            <div class="tech-tagline">Belajar & bermain dunia teknologi bersama!</div>
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <span class="robot-icon">🤖</span>
+                </div>
+                <div class="logo-text">BIONIX</div>
+            </div>
+            <h1>AI Customer Service</h1>
+            <p>Solusi Teknologi Edukasional</p>
+        </div>
+        
+        <div class="company-info">
+            <span>PT. BIONIX EDUTEKNO INDONESIA</span>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">
+                🚀 <strong>Selamat datang di Bionix!</strong><br>
+                Tanyakan tentang solusi teknologi edukasi kami, program robotika, atau layanan lainnya. Kami siap membantu Anda!
+            </div>
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+        
+        <div class="chat-input-container">
+            <form class="chat-input-form" id="chatForm">
+                <textarea 
+                    class="chat-input" 
+                    id="chatInput" 
+                    placeholder="Ask about our technology solutions..." 
+                    rows="1"
+                    required
+                ></textarea>
+                <button type="submit" class="send-button" id="sendButton">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        class ChatBot {
+            constructor() {
+                this.chatMessages = document.getElementById('chatMessages');
+                this.chatForm = document.getElementById('chatForm');
+                this.chatInput = document.getElementById('chatInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.typingIndicator = document.getElementById('typingIndicator');
+                this.webhookUrl = 'https://n8n-yjqcczeu.ap-southeast-1.clawcloudrun.com/webhook/328872a3-dd6f-4cde-a0d0-a5d25881622f';
+                this.sessionId = this.generateSessionId();
+                
+                this.initializeEventListeners();
+                this.autoResizeTextarea();
+            }
+
+            generateSessionId() {
+                return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            initializeEventListeners() {
+                this.chatForm.addEventListener('submit', (e) => this.handleSubmit(e));
+                this.chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.chatForm.dispatchEvent(new Event('submit'));
+                    }
+                });
+                this.chatInput.addEventListener('input', () => this.autoResizeTextarea());
+            }
+
+            autoResizeTextarea() {
+                this.chatInput.style.height = 'auto';
+                this.chatInput.style.height = Math.min(this.chatInput.scrollHeight, 120) + 'px';
+            }
+
+            async handleSubmit(e) {
+                e.preventDefault();
+                
+                const message = this.chatInput.value.trim();
+                if (!message) return;
+
+                // Add user message
+                this.addMessage(message, 'user');
+                this.chatInput.value = '';
+                this.autoResizeTextarea();
+                
+                // Disable form while processing
+                this.setFormDisabled(true);
+                this.showTypingIndicator();
+
+                try {
+                    // Send message to webhook
+                    const response = await this.sendToWebhook(message);
+                    
+                    // Hide typing indicator
+                    this.hideTypingIndicator();
+                    
+                    // Add bot response
+                    if (response && response.response) {
+                        this.addMessage(response.response, 'bot');
+                    } else {
+                        this.addMessage('Terima kasih atas ketertarikan Anda pada teknologi pendidikan Bionix! Tim kami akan segera menghubungi Anda dengan informasi terperinci tentang solusi kami.', 'bot');
+                    }
+                } catch (error) {
+                    console.error('Error mengirim pesan:', error);
+                    this.hideTypingIndicator();
+                    this.addMessage('Kami mohon maaf atas masalah teknis ini. Silakan coba lagi atau hubungi kami secara langsung untuk mendapatkan bantuan segera.', 'system');
+                }
+
+                // Re-enable form
+                this.setFormDisabled(false);
+                this.chatInput.focus();
+            }
+
+            async sendToWebhook(message) {
+                const payload = {
+                    message: message,
+                    session_id: this.sessionId,
+                    timestamp: new Date().toISOString(),
+                    source: 'bionix-edutekno-chatbot',
+                    company: 'PT. Bionix Edutekno Indonesia'
+                };
+
+                const response = await fetch(this.webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                return await response.json();
+            }
+
+            addMessage(message, type) {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${type}`;
+                if (type === 'bot') {
+                    // Markdown sederhana: **bold**, *italic*, \n, dan list * 
+                    let html = message
+                        // Bold
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        // Italic (hati-hati jangan tabrak bold)
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        // List: * item
+                        .replace(/(?:^|\n)\* (.*?)(?=\n|$)/g, '<li>$1</li>')
+                        // Newline jadi <br> (sementara, akan diperbaiki di bawah)
+                        .replace(/\n/g, '<br>');
+
+                    // Jika ada <li>, bungkus dengan <ul>
+                    if (html.includes('<li>')) {
+                        html = html.replace(/(<li>[\s\S]*<\/li>)/g, '<ul>$1</ul>');
+                        // Hapus <br> di dalam <ul>
+                        html = html.replace(/<ul>([\s\S]*?)<\/ul>/g, (match, p1) => {
+                            return '<ul>' + p1.replace(/<br>/g, '') + '</ul>';
+                        });
+                    }
+
+                    messageElement.innerHTML = html;
+                } else {
+                    messageElement.textContent = message;
+                }
+                this.chatMessages.appendChild(messageElement);
+                this.scrollToBottom();
+            }
+
+            showTypingIndicator() {
+                this.typingIndicator.style.display = 'flex';
+                this.chatMessages.appendChild(this.typingIndicator);
+                this.scrollToBottom();
+            }
+
+            hideTypingIndicator() {
+                this.typingIndicator.style.display = 'none';
+                if (this.typingIndicator.parentNode) {
+                    this.typingIndicator.parentNode.removeChild(this.typingIndicator);
+                }
+            }
+
+            setFormDisabled(disabled) {
+                this.chatInput.disabled = disabled;
+                this.sendButton.disabled = disabled;
+            }
+
+            scrollToBottom() {
+                setTimeout(() => {
+                    this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+                }, 100);
+            }
+        }
+
+        // Initialize the chatbot when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new ChatBot();
+        });
+    </script>
+</body>
+</html>
