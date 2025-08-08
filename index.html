@@ -378,6 +378,7 @@
         </div>
     </div>
 
+    <script src="config.local.js"></script>
     <script>
         class ChatBot {
             constructor() {
@@ -386,7 +387,9 @@
                 this.chatInput = document.getElementById('chatInput');
                 this.sendButton = document.getElementById('sendButton');
                 this.typingIndicator = document.getElementById('typingIndicator');
-                this.webhookUrl = 'https://n8n-yjqcczeu.ap-southeast-1.clawcloudrun.com/webhook/328872a3-dd6f-4cde-a0d0-a5d25881622f';
+                this.webhookUrl = (window.BIONIX_CONFIG && window.BIONIX_CONFIG.webhookUrl) 
+                    ? window.BIONIX_CONFIG.webhookUrl 
+                    : '';
                 this.sessionId = this.generateSessionId();
                 
                 this.initializeEventListeners();
